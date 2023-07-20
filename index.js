@@ -44,7 +44,11 @@ const expandNames = (names = [], config = {}) => {
 
   for (const name of names) {
     const segments = name.split(separator);
+
     for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
+
+      expanded.add(segment);
       expanded.add(segments.slice(0, i + 1).join(separator));
       expanded.add(segments.slice(0, i + 1).reverse().join(separator));
 

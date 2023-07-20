@@ -6,6 +6,9 @@
   "bin": {
     "names": "./bin/cli.js"
   },
+  "scripts": {
+    "test": "mocha test/*.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -15,8 +18,6 @@
     "log-update": "^4.0.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.61.0",
-    "@typescript-eslint/parser": "^5.61.0",
     "gulp-format-md": "^2.0.0",
     "mocha": "^10.2.0"
   }
