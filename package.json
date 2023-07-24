@@ -55,12 +55,11 @@
     ],
     "related": {
       "list": [
-        "get-pkgs",
-        "github-base"
+        "get-pkg"
       ]
     },
     "reflinks": [
-      "get-pkgs"
+      "get-pkg"
     ],
     "lint": {
       "reflinks": true
