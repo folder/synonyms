@@ -1,8 +1,8 @@
 {
   "name": "@folder/synonyms",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "license": "MIT",
-  "description": "Get synonyms for a word. Optionally breaks hyphenated words into their parts and gets synonyms for each one. API and CLI.",
+  "description": "Get synonyms for a word from OpenAI GPT-3 or GPT-4, or the WordsAPI. Optionally breaks hyphenated words into their parts and gets synonyms for each one. API and CLI.",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "folder/synonyms",
   "homepage": "https://github.com/folder/synonyms",
@@ -31,7 +31,17 @@
     "word",
     "words",
     "synonym",
-    "language"
+    "language",
+    "english",
+    "api",
+    "gpt-3",
+    "gpt-4",
+    "openai",
+    "wordsapi",
+    "words-api",
+    "ai",
+    "llm",
+    "chatgpt"
   ],
   "verb": {
     "run": true,
