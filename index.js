@@ -72,7 +72,7 @@ const promptSynonyms = async ({
       messages: [
         {
           role: 'system',
-          content: 'You are a helpful AI assistant. Return a list of comma-separated synonyms or words that are similar to what the user requests. You strongly prefer single word synonyms, compound words, or words with a dash; and you avoid phrases with multiple words separated by spaces. You strongly dislike adding any commentary, explanations, descriptions, or other words that are not synonyms.'
+          content: 'You are a helpful AI assistant. Return a list of comma-separated synonyms or words that are similar to what the user requests. You strongly prefer single word synonyms, compound words, or words with a dash; and you avoid phrases with multiple words separated by spaces. If the user gives you compound words, respond in kind. You strongly dislike adding any commentary, explanations, descriptions, or other words that are not synonyms.'
         },
         {
           role: 'user',
@@ -83,7 +83,7 @@ const promptSynonyms = async ({
   });
 
   if (!res.ok) {
-    throw new Error(await res.text() || 'Failed to fetch the chat response.');
+    throw new Error(await res.text() || 'Failed to fetch the OpenAI response.');
   }
 
   if (!res.body) {
