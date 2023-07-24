@@ -1,24 +1,59 @@
 {
   "name": "@folder/synonyms",
   "version": "1.0.0",
-  "description": "Get synonyms for a word. Optionally breaks a hyphenated word into its parts and creates new variations with synonyms for each one.",
+  "license": "MIT",
+  "description": "Get synonyms for a word. Optionally breaks hyphenated words into their parts and gets synonyms for each one. API and CLI.",
+  "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
+  "repository": "folder/synonyms",
+  "homepage": "https://github.com/folder/synonyms",
+  "bugs": {
+    "url": "https://github.com/folder/synonyms/issues"
+  },
   "main": "index.js",
   "bin": {
-    "names": "./bin/cli.js"
+    "synonyms": "./bin/cli.js"
   },
   "scripts": {
     "test": "mocha test/*.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "ansi-colors": "^4.1.3",
     "dotenv": "^16.3.1",
-    "log-update": "^4.0.0"
+    "minimist": "^1.2.8"
   },
   "devDependencies": {
     "gulp-format-md": "^2.0.0",
     "mocha": "^10.2.0"
+  },
+  "keywords": [
+    "synonyms",
+    "thesaurus",
+    "dictionary",
+    "word",
+    "words",
+    "synonym",
+    "language"
+  ],
+  "verb": {
+    "run": true,
+    "toc": false,
+    "layout": "default",
+    "tasks": [
+      "readme"
+    ],
+    "plugins": [
+      "gulp-format-md"
+    ],
+    "related": {
+      "list": [
+        "get-pkgs",
+        "github-base"
+      ]
+    },
+    "reflinks": [
+      "get-pkgs"
+    ],
+    "lint": {
+      "reflinks": true
+    }
   }
 }

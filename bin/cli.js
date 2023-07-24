@@ -1,72 +1,24 @@
 #!/usr/bin/env node
 
-const colors = require('ansi-colors');
-const update = require('log-update');
-const { checkPackages } = require('..');
+const synonym = require('..');
 
-const names = process.argv.slice(2);
-const state = {};
-
-const { cyan: c, dim, gray, green: g, red: r } = colors;
-const { check, cross } = colors.symbols;
-
-if (names.length === 0) {
-  console.log(colors.red('Please provide package names'));
-  process.exit(1);
-}
-
-const render = () => {
-  let count = state.names.length;
-  const output = [];
-
-  for (const name of state.names) {
-    const exists = state.checks[name];
-
-    switch (String(exists)) {
-      case 'true':
-        output.push(['', g(check), name].join(' '));
-        break;
-
-      case 'false':
-        output.push(['', r(cross), name].join(' '));
-        break;
-
-      case 'null':
-      default: {
-        count--;
-        output.push(['', gray.dim(cross), dim(name)].join(' '));
-        break;
-      }
-    }
+const opts = {
+  alias: {
+    k: 'apiKey',
+    j: 'join',
+    s: 'split',
+    v: 'version'
   }
-
-  const s = count === 1 ? '' : 's';
-  output.push('', `Checked ${c(count)} package${s}`, '');
-  state.output = output.join('\n');
 };
 
-const interval = setInterval(() => {
-  update(state.output);
-}, 250);
+const args = require('minimist')(process.argv.slice(2), opts);
+const { _: names, ...options } = args;
 
-checkPackages(names, {
-  synonyms: 50,
-  onBefore(names = []) {
-    console.log();
-    state.names = names.slice();
-    state.checks = {};
+if (args.version) {
+  console.log('synonyms', `v${require('../package.json').version}`);
+  process.exit(0);
+}
 
-    for (const name of names.sort()) {
-      state.checks[name] = null;
-    }
-
-    render();
-  },
-  onResult: ({ name, exists }) => {
-    state.checks[name] = exists;
-    state.finished = true;
-    clearInterval(interval);
-    render();
-    update(state.output);
-  }
-});
+synonym(names, options)
+  .then(console.log)
+  .catch(console.error);

@@ -39,7 +39,7 @@ module.exports = {
     'dot-location': [1, 'property'],
     'dot-notation': 1,
     'eol-last': 1,
-    'eqeqeq': 1,
+    'eqeqeq': [1, 'smart'],
     'indent': [1, 2, { SwitchCase: 1 }],
     'linebreak-style': [1, 'unix'],
     'no-alert': 1,

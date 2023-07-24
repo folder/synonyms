@@ -1,69 +1,87 @@
 const assert = require('assert/strict');
-const { synonyms, expandNames, expandSynonyms } = require('..');
+const { synonyms, splitWords } = require('..');
 
 describe('Synonyms', () => {
+  describe('splitWords', () => {
+    it('should be a function', () => {
+      assert.strictEqual(typeof splitWords, 'function');
+    });
+
+    it('should return an array', () => {
+      const result = splitWords(['word']);
+      assert.ok(Array.isArray(result));
+    });
+
+    it('should return split words', () => {
+      const result = splitWords(['word-composite']);
+      assert.ok(result.includes('word'));
+      assert.ok(result.includes('composite'));
+      assert.ok(result.includes('word-composite'));
+    });
+
+    it('should return individual segments of hyphen-separated words', () => {
+      const input = ['foo-bar-baz'];
+      const expectedOutput = ['foo', 'bar', 'baz', 'foo-bar-baz'];
+      const result = splitWords(input);
+      expectedOutput.forEach(word => assert.ok(result.includes(word)));
+    });
+
+    it('should return individual segments of space-separated words', () => {
+      const input = ['foo bar baz'];
+      const expectedOutput = ['foo', 'bar', 'baz', 'foo bar baz'];
+      const result = splitWords(input);
+      expectedOutput.forEach(word => assert.ok(result.includes(word)));
+    });
+
+    it('should re-join segments using the given join char', () => {
+      const input = ['foo bar baz'];
+      const expectedOutput = ['foo', 'bar', 'baz', 'foo bar baz', 'foo-bar-baz'];
+      const result = splitWords(input, { join: '-' });
+      expectedOutput.forEach(word => assert.ok(result.includes(word)));
+    });
+
+    it('should re-join segments using the given join chars', () => {
+      const input = ['foo bar baz'];
+      const expectedOutput = ['foo', 'bar', 'baz', 'foo bar baz', 'foo-bar-baz', 'foobarbaz'];
+      const result = splitWords(input, { join: ['-', ''] });
+      expectedOutput.forEach(word => assert.ok(result.includes(word)));
+    });
+  });
+
   describe('synonyms', () => {
     it('should be a function', () => {
       assert.strictEqual(typeof synonyms, 'function');
     });
 
-    it('should return an array', async () => {
-      const result = await synonyms('word');
-      assert.ok(Array.isArray(result));
-      assert.ok(result.length > 0);
+    it('should return an an object with arrays', async () => {
+      const { all } = await synonyms('word');
+      assert.ok(Array.isArray(all));
+      assert.ok(all.length > 0);
     });
 
-    it('should return words without spaces', async () => {
-      const result = await synonyms('word');
-      result.forEach(word => assert.ok(!word.includes(' ')));
-    });
-  });
+    it('should get synonyms for multiple words', async () => {
+      const { words } = await synonyms(['happy', 'sad']);
+      assert.ok(Array.isArray(words.happy));
+      assert.ok(words.happy.length > 0);
 
-  describe('expandNames', () => {
-    it('should be a function', () => {
-      assert.strictEqual(typeof expandNames, 'function');
-    });
-
-    it('should return an array', () => {
-      const result = expandNames(['word']);
-      assert.ok(Array.isArray(result));
-    });
-
-    it('should return names without words containing "-"', () => {
-      const result = expandNames(['word-composite']);
-      assert.ok(result.includes('word'));
-      assert.ok(result.includes('composite'));
-      assert.ok(result.includes('word-composite'));
-      assert.ok(result.includes('composite-word'));
-    });
-
-    it('should return individual segments of hyphen-separated words', () => {
-      const input = ['word-composite'];
-      const expectedOutput = ['word', 'composite'];
-      const result = expandNames(input);
-      expectedOutput.forEach(word => assert.ok(result.includes(word)));
+      assert.ok(Array.isArray(words.sad));
+      assert.ok(words.sad.length > 0);
     });
   });
 
-  describe('expandSynonyms', () => {
-    it('should be a function', () => {
-      assert.strictEqual(typeof expandSynonyms, 'function');
-    });
+  describe('split words', () => {
+    it('should get synonyms for each word after splitting a word', async () => {
+      const result = await synonyms('clean-cut', { split: true });
+      const { words } = result;
 
-    it('should return an array', async () => {
-      const result = await expandSynonyms(['word']);
-      assert.ok(Array.isArray(result));
-    });
+      assert.ok(words['clean-cut'].includes('trim'));
+      assert.ok(words['clean-cut'].includes('clear-cut'));
 
-    it('should return words without spaces', async () => {
-      const result = await expandSynonyms(['word']);
-      result.forEach(word => assert.ok(!word.includes(' ')));
-    });
+      assert.ok(words.clean.includes('neat'));
+      assert.ok(words.clean.includes('fresh'));
 
-    it('should limit the result based on provided limit', async () => {
-      const limit = 10;
-      const result = await expandSynonyms(['word'], { limit });
-      assert(result.length <= limit);
+      assert.ok(words.cut.includes('trim'));
+      assert.ok(words.cut.includes('prune'));
     });
   });
 });

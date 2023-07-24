@@ -1,58 +1,158 @@
-# @folder/synonyms
+# @folder/synonyms [![NPM version](https://img.shields.io/npm/v/@folder/synonyms.svg?style=flat)](https://www.npmjs.com/package/@folder/synonyms) [![NPM monthly downloads](https://img.shields.io/npm/dm/@folder/synonyms.svg?style=flat)](https://npmjs.org/package/@folder/synonyms) [![NPM total downloads](https://img.shields.io/npm/dt/@folder/synonyms.svg?style=flat)](https://npmjs.org/package/@folder/synonyms)
 
-Get synonyms of a word and derive possible name expansions.
+> Get synonyms for a word. Optionally breaks hyphenated words into their parts and gets synonyms for each one. API and CLI.
 
-## Usage
+Please consider following this project's author, [Jon Schlinkert](https://github.com/jonschlinkert), and consider starring the project to show your :heart: and support.
 
-```js
-const synonyms = require("@folder/synonyms");
-```
+## Install
 
-## Installation
-
-Requires [nodejs](http://nodejs.org/).
+Install with [npm](https://www.npmjs.com/):
 
 ```sh
-$ npm install @folder/synonyms --save
+$ npm install --save @folder/synonyms
 ```
+
+## Getting started
+
+Requires [Node.js](http://nodejs.org/), and an API key from [WordsAPI](https://www.wordsapi.com/).
+
+You can pass your `apiKey` as an option, or set it as an environment variable on `WORDS_API_KEY` (handy if you're using the [CLI](#cli)).
 
 ## API
 
+### Usage
+
+```js
+const { synonyms } = require('@folder/synonyms');
+
+const words = await synonyms(['foo', 'bar']);
+console.log(words);
+```
+
 ### synonyms
 
-Get an array of synonyms for given word.
+Get synonyms from the [WordsAPI](https://www.wordsapi.com/).
 
-```js
-const { synonyms } = require("@folder/synonyms");
+**Signature**
 
-// synonyms(word: string, config: object): Promise<Array<string>>
-synonyms("happy")
-  .then((result) => console.log(result))
-  .catch((err) => console.error(err));
+```ts
+synonyms(word: string | string[], options: object): Promise<Array<string>>
 ```
 
-### expandNames
-
-Expand names produces an array with various combinations of words extracted from a hyphen-separated word.
+**Example**
 
 ```js
-const { expandNames } = require("@folder/synonyms");
+const { synonyms } = require('@folder/synonyms');
 
-// expandNames(names: Array<string>, config: object): Array<string>
-const expandedNames = expandNames(["word-composite"]);
-console.log(expandedNames); // outputs: ['word', 'composite', 'word-composite', 'composite-word']
+// pass a string or array of words
+const results = await synonyms(['fork', 'knife']);
+console.log(results.all); //=> list of all synonyms
+console.log(results.fork); //=> ['divide', 'split', 'diverge', ...]
+console.log(results.knife); //=> ['blade', 'cutlery', 'dagger', ...]
 ```
 
-### expandSynonyms
+#### Options
 
-Expand synonyms produces an array of synonyms for all words in the array of names passed, it also accepts an options object which can contain a `limit`(default 50) for maximum synonyms and a flag `synonyms` to indicate if the synonyms api needs to be called.
+| **Option** | **Type** | **Default** | **Description** |
+| --- | --- | --- |
+| `apiKey` | `string` | N/A | A string representing the user's RapidAPI key. If not provided, the function will attempt to read from a `WORDS_API_KEY` environment variable. |
+| `split` | `string\|regex\|boolean` | `[\s-]+` | Determines if [splitWords](#splitWords) should be used. |
+| `join` | `string\|string[]\|boolean` | `false` | Passed to [splitWords](#splitWords) when `split` is defined. |
+
+### splitWords
+
+The `splitWords` function breaks down compound words into individual words using either the provided splitting pattern or a default pattern (`/[\s-]+/g`).
 
 ```js
-const { expandSynonyms } = require("@folder/synonyms");
-
-// expandSynonyms(names: Array<string>, options: object): Promise<Array<string>>
-expandSynonyms(["happy", "sad"], { limit: 10, synonyms: true })
-  .then((result) => console.log(result))
-  .catch((err) => console.error(err));
+const { splitWords } = require('@folder/synonyms');
+console.log(splitWords('foo-bar'));
+//=> ['foo', 'bar', 'foo-bar', 'bar-foo']
+console.log(splitWords(['foo-bar', 'baz-qux']));
+//=> ['foo', 'bar', 'foo-bar', 'baz', 'qux', 'baz-qux']
 ```
 
+#### Options
+
+| **Option** | **Type** | **Default** | **Description** |
+| --- | --- | --- | --- |
+| `split` | `string\|regex\|boolean` | `[\s-]+`| A string or regex to use for splitting words. |
+| `join` | `string\|string[]\|boolean` | `false` | A string to re-join the expanded words. For example, given `join: ''`, `foo-bar` will return `foobar`. This is useful when trying to get synonyms for compound or hyphenated words |
+
+## CLI
+
+Install globally with [npm](https://www.npmjs.com/):
+
+```sh
+npm install @folder/synonyms --global
+```
+
+### Usage
+
+```sh
+synonyms <word> [options]
+```
+
+### Options
+
+| **Option** | **Alias** | **Description** |
+| --- | --- | --- |
+| `--apiKey` | `-k` | A string representing the user's RapidAPI key. If not provided, the function will attempt to read from a `WORDS_API_KEY` environment variable. |
+| `--split` | `-s` | Determines if [splitWords](#splitWords) should be used. |
+| `--join` | `-j` | Passed to [splitWords](#splitWords) when `split` is defined. |
+
+## About
+
+<details>
+<summary><strong>Contributing</strong></summary>
+
+Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](../../issues/new).
+
+</details>
+
+<details>
+<summary><strong>Running Tests</strong></summary>
+
+Running and reviewing unit tests is a great way to get familiarized with a library and its API. You can install dependencies and run tests with the following command:
+
+```sh
+$ npm install && npm test
+```
+
+</details>
+
+<details>
+<summary><strong>Building docs</strong></summary>
+
+_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+
+To generate the readme, run the following command:
+
+```sh
+$ npm install -g verbose/verb#dev verb-generate-readme && verb
+```
+
+</details>
+
+### Related projects
+
+You might also be interested in these projects:
+
+* [get-pkgs](https://www.npmjs.com/package/get-pkgs): Get the package.json for an array of repos from the npm registry, optionally filtering properties… [more](https://github.com/jonschlinkert/get-pkgs) | [homepage](https://github.com/jonschlinkert/get-pkgs "Get the package.json for an array of repos from the npm registry, optionally filtering properties using glob patterns.")
+* [github-base](https://www.npmjs.com/package/github-base): Low-level methods for working with the GitHub API in node.js/JavaScript. | [homepage](https://github.com/jonschlinkert/github-base "Low-level methods for working with the GitHub API in node.js/JavaScript.")
+
+### Author
+
+**Jon Schlinkert**
+
+* [GitHub Profile](https://github.com/jonschlinkert)
+* [Twitter Profile](https://twitter.com/jonschlinkert)
+* [LinkedIn Profile](https://linkedin.com/in/jonschlinkert)
+
+### License
+
+Copyright © 2023, [Jon Schlinkert](https://github.com/jonschlinkert).
+Released under the MIT License.
+
+***
+
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.8.0, on July 24, 2023._

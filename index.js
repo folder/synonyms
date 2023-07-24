@@ -1,82 +1,84 @@
 require('dotenv/config');
 
 const url = 'https://wordsapiv1.p.rapidapi.com/words';
-const defaults = {
-  method: 'GET',
-  headers: {
-    'X-RapidAPI-Key': process.env.RAPID_API_KEY,
-    'X-RapidAPI-Host': 'wordsapiv1.p.rapidapi.com'
-  }
+const SPLIT_REGEX = /[\s-]+/g;
+const JOIN_CHARS = false;
+
+const option = (value, fallback) => {
+  if (value === false) return false;
+  if (value === true) return fallback;
+  return value ?? fallback;
 };
 
-const synonyms = async (word, config = {}) => {
-  const { limit } = config;
-  const result = [];
+const splitWords = (words = [], options = {}) => {
+  const splitPattern = option(options.split, SPLIT_REGEX);
+  const joinChars = option(options.join, JOIN_CHARS);
+  const array = [].concat(words);
+  const segments = [];
 
-  const recurse = async value => {
-    if (Array.isArray(value)) {
-      const words = value.filter(w => !w.includes('-'));
+  for (const word of array.slice()) {
+    const segs = word.split(splitPattern);
 
-      for (const w of words) {
-        const data = await synonyms(w, config);
-
-        result.push(...data);
-
-        if (limit && result.length >= limit) {
-          return result;
-        }
-      }
-
-      return result;
+    if (segs.length > 1) {
+      segments.push(segs);
     }
 
-    const response = await fetch(`${url}/${value}/synonyms`, { ...defaults, ...config });
-    const data = await response.json();
-    return data.synonyms ? data.synonyms.filter(w => !w.includes(' ')) : [];
+    for (const segment of segs) {
+      if (!array.includes(segment)) {
+        array.push(segment);
+      }
+    }
+  }
+
+  const parsed = array.flatMap(name => name.split(splitPattern).filter(Boolean));
+
+  if (joinChars && segments.length > 0) {
+    for (const segment of segments) {
+      for (const chars of [].concat(joinChars)) {
+        array.push(segment.join(chars));
+      }
+    }
+  }
+
+  return [...new Set([...array, ...parsed])].sort();
+};
+
+const synonyms = async (words = [], options = {}) => {
+  const apiKey = options.apiKey || process.env.WORDS_API_KEY;
+  const values = options?.split ? splitWords(words, options) : [].concat(words);
+  const pending = new Set();
+  const results = { all: [], words: {} };
+
+  const defaults = {
+    method: 'GET',
+    headers: {
+      'X-RapidAPI-Key': apiKey,
+      'X-RapidAPI-Host': 'wordsapiv1.p.rapidapi.com'
+    }
   };
 
-  return recurse(word);
-};
+  for (const word of values) {
+    const promise = await fetch(`${url}/${word}/synonyms`, { ...defaults, ...options })
+      .then(async response => {
+        const data = await response.json();
 
-const expandNames = (names = [], config = {}) => {
-  const { separator = '-' } = config;
-  const expanded = new Set();
+        if (data.synonyms) {
+          results.words[word] = data.synonyms;
+          results.all.push(...data.synonyms);
+        } else {
+          results.words[word] = [];
+        }
+      });
 
-  for (const name of names) {
-    const segments = name.split(separator);
-
-    for (let i = 0; i < segments.length; i++) {
-      const segment = segments[i];
-
-      expanded.add(segment);
-      expanded.add(segments.slice(0, i + 1).join(separator));
-      expanded.add(segments.slice(0, i + 1).reverse().join(separator));
-
-      if (i > 0) {
-        const rotated = segments.slice(i).concat(segments.slice(0, i));
-        expanded.add(rotated.join(separator));
-        expanded.add(rotated.reverse().join(separator));
-      }
-    }
+    pending.add(promise);
   }
 
-  return [...expanded].sort();
+  await Promise.all(pending);
+
+  results.all = [...new Set(results.all)].sort();
+  return results;
 };
 
-const expandSynonyms = async (names = [], options = {}) => {
-  const limit = options.limit || 50;
-  const expanded = expandNames(names, options);
-
-  if (options.synonyms) {
-    const results = await Promise.all(expanded.map(name => synonyms(name, options)));
-    expanded.push(...results.flat().filter(w => !w.includes(' ')));
-  }
-
-  return [...new Set(expanded)].slice(0, limit);
-};
-
-module.exports = {
-  expandNames,
-  expandSynonyms,
-  synonyms
-};
+module.exports = synonyms;
+module.exports.synonyms = synonyms;
+module.exports.splitWords = splitWords;
