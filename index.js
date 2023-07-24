@@ -172,5 +172,3 @@ const synonyms = async (words = [], options = {}) => {
 module.exports = synonyms;
 module.exports.synonyms = synonyms;
 module.exports.splitWords = splitWords;
-
-synonyms('5 words that mean "mildly fabulous"', { openai: true }).then(console.log);

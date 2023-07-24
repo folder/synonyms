@@ -1,6 +1,6 @@
 {
   "name": "@folder/synonyms",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "MIT",
   "description": "Get synonyms for a word from OpenAI GPT-3 or GPT-4, or the WordsAPI. Optionally breaks hyphenated words into their parts and gets synonyms for each one. API and CLI.",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
