@@ -1,6 +1,6 @@
 {
   "name": "@folder/synonyms",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "description": "Get synonyms for a word. Optionally breaks hyphenated words into their parts and gets synonyms for each one. API and CLI.",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",

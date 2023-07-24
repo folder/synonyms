@@ -43,6 +43,26 @@ const splitWords = (words = [], options = {}) => {
   return [...new Set([...array, ...parsed])].sort();
 };
 
+const fetchSynoyms = async (url, options) => {
+  try {
+    const response = await fetch(url, options);
+
+    if (response.statusText === 'Forbidden') {
+      options.onError?.(response);
+      return Promise.reject(new Error('Invalid API key'));
+    }
+
+    if (response.status !== 200) {
+      options.onError?.(response);
+      return Promise.reject(new Error(`Invalid response: ${response.status}`));
+    }
+
+    return response;
+  } catch (err) {
+
+  }
+};
+
 const synonyms = async (words = [], options = {}) => {
   const apiKey = options.apiKey || process.env.WORDS_API_KEY;
   const values = options?.split ? splitWords(words, options) : [].concat(words);
@@ -58,9 +78,9 @@ const synonyms = async (words = [], options = {}) => {
   };
 
   for (const word of values) {
-    const promise = await fetch(`${url}/${word}/synonyms`, { ...defaults, ...options })
-      .then(async response => {
-        const data = await response.json();
+    const promise = fetchSynoyms(`${url}/${word}/synonyms`, { ...defaults, ...options })
+      .then(async res => {
+        const data = await res.json();
 
         if (data.synonyms) {
           results.words[word] = data.synonyms;
@@ -68,12 +88,19 @@ const synonyms = async (words = [], options = {}) => {
         } else {
           results.words[word] = [];
         }
+
+        return res;
+      })
+      .catch(err => {
+        console.log(err);
+        return Promise.reject(err);
       });
 
     pending.add(promise);
   }
 
-  await Promise.all(pending);
+  const res = await Promise.allSettled(pending);
+  console.log(res);
 
   results.all = [...new Set(results.all)].sort();
   return results;
