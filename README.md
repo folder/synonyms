@@ -213,8 +213,7 @@ $ npm install -g verbose/verb#dev verb-generate-readme && verb
 
 You might also be interested in these projects:
 
-* [get-pkgs](https://www.npmjs.com/package/get-pkgs): Get the package.json for an array of repos from the npm registry, optionally filtering properties… [more](https://github.com/jonschlinkert/get-pkgs) | [homepage](https://github.com/jonschlinkert/get-pkgs "Get the package.json for an array of repos from the npm registry, optionally filtering properties using glob patterns.")
-* [github-base](https://www.npmjs.com/package/github-base): Low-level methods for working with the GitHub API in node.js/JavaScript. | [homepage](https://github.com/jonschlinkert/github-base "Low-level methods for working with the GitHub API in node.js/JavaScript.")
+[get-pkg](https://www.npmjs.com/package/get-pkg): Get the package.json for a project from npm. | [homepage](https://github.com/jonschlinkert/get-pkg "Get the package.json for a project from npm.")
 
 ### Author
 
