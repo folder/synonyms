@@ -1,5 +1,11 @@
 #!/usr/bin/env node
 
+'use strict';
+
+const os = require('os');
+const path = require('path');
+require('dotenv').config({ path: path.join(os.homedir(), '.env') });
+
 const synonym = require('..');
 
 const opts = {
